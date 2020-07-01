@@ -7,15 +7,15 @@ from lib.file_api import FileSystem
 
 
 config = {
-  'authToken': 'be270cae-1c77-4853-b8c1-30b6cf5e9878',
+  'auth_token': 'be270cae-1c77-4853-b8c1-30b6cf5e9878',
   'api': 'http://127.0.0.1',
-  'organizationId': 'myorg',
-  'datasetId': 'dataset-name',
+  'organization_id': 'myorg',
+  'dataset_id': 'dataset-name',
 }
 
 ckan_authz_config = {
   'body': {
-    'scopes': ["obj:{}/{}/*:write".format(config['organizationId'], config['datasetId'])],
+    'scopes': ["obj:{}/{}/*:write".format(config['organization_id'], config['dataset_id'])],
   },
 }
 
@@ -46,7 +46,7 @@ cloud_storage_config = {
 }
 
 @requests_mock.Mocker()
-def mock_ckan_authz(m):
+def mock_ckan_authz(mock_request):
     json_resp = {
         "help": "http://localhost:5000/api/3/action/help_show?name=authz_authorize",
         "success": True,
@@ -61,13 +61,13 @@ def mock_ckan_authz(m):
         }
     }
 
-    m.post(urljoin(config['api'], '/api/3/action/authz_authorize'), json=json_resp)
+    mock_request.post(urljoin(config['api'], '/api/3/action/authz_authorize'), json=json_resp)
 
     return requests.post(urljoin(config['api'], '/api/3/action/authz_authorize'),
                     data=ckan_authz_config['body'])
 
 @requests_mock.Moocker()
-def mock_cloud_storage_access_granter_service(m):
+def mock_cloud_storage_access_granter_service(mock_request):
     json_resp = {
                 'transfer': 'basic',
                 'objects': [
@@ -92,44 +92,44 @@ def mock_cloud_storage_access_granter_service(m):
                     },
                 ],
             }
-    m.post(urljoin(config['api'], '/api/3/action/authz_authorize'), json=json_resp)
+    mock_request.post(urljoin(config['api'], '/api/3/action/authz_authorize'), json=json_resp)
 
     return requests.post(urljoin(config['api'], '/api/3/action/authz_authorize'),
                     data=access_granter_config['body'])
 
 @requests_mock.Mocker()
-def mock_cloud_storage(m):
+def mock_cloud_storage(mock_request):
     json_resp = { 'success': True }
 
-    m.put(urljoin(cloud_storage_config['api'], cloud_storage_config['path']), json=json_resp)
+    mock_request.put(urljoin(cloud_storage_config['api'], cloud_storage_config['path']), json=json_resp)
 
     return requests.put(urljoin(cloud_storage_config['api'], cloud_storage_config['path']),
                     data=cloud_storage_config['body'], headers=access_granter_config['headers'])
 
 @requests_mock.Mocker()
-def mock_verify_file_upload(m):
+def mock_verify_file_upload(mock_request):
     json_resp = {
             'message': "Verify Uploaded Successfully",
             'success': True,
         }
 
-    m.post('https://some-verify-callback.com/', json=json_resp)
+    mock_request.post('https://some-verify-callback.com/', json=json_resp)
 
     return requests.post('https://some-verify-callback.com/')
 
 
-ckan_uploader = Uploader(config['authToken'],
-                config['organizationId'],
-                config['datasetId'],
+ckan_uploader = Uploader(config['auth_token'],
+                config['organization_id'],
+                config['dataset_id'],
                 config['api']
             )
 
 file = FileSystem('./test/fixtures/sample.csv')
 
 def test_can_instantiate_uploader():
-    datahub = Uploader(config['authToken'],
-                config['organizationId'],
-                config['datasetId'],
+    datahub = Uploader(config['auth_token'],
+                config['organization_id'],
+                config['dataset_id'],
                 config['api']
             )
     assert datahub.api == config['api']
