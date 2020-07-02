@@ -31,10 +31,11 @@ $ python deploy setup.py
 ```
 
 
-## Getting Started
+## Developers
 ```bash
-import ckanlib
-client = ckanlib.CKAN(endpoint, token_api_key)
+from lib import ckan_client
+
+client = ckan_client.Uploader(endpoint, token_api_key)
 
 ## Porcelain
 # TODO: dataset_name inferred from file?
@@ -56,7 +57,11 @@ client.push_dataset_metadata()  # package_update
 
 ## Tests
 
+To run tests:
 
+```bash
+ pytest tests
+```
 
 ## License
 
