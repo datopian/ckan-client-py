@@ -11,14 +11,11 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 
 setup(
-    name='ckan3-py-sdk',
+    name='ckan-client',
 
-    # Versions should comply with PEP440.  For a discussion on single-sourcing
-    # the version across setup.py and the project code, see
-    # http://packaging.python.org/en/latest/tutorial.html#version
     version='0.1.0',
 
-    description='''Ckan3-py-sdk is a "SDK" in Python for uploading files and updating metastore.''',
+    description='''CKAN3 Python SDK is a Python SDK for CKAN with a focus on ...''',
     long_description=long_description,
     long_description_content_type='text/markdown',
 
@@ -26,11 +23,10 @@ setup(
     url='https://github.com/datopian/ckan3-py-sdk',
 
     # Author details
-    author='Usman Waheed',
-    author_email='usman.waheed@datopian.com',
+    author='Datopian',
 
     # Choose your license
-    license=open('License').read(),
+    license='MIT',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -50,7 +46,7 @@ setup(
 
 
     # What does your project relate to?
-    keywords='CKAN API UPLOAD LFS CLOUD',
+    keywords='CKAN API UPLOAD CLOUD',
 
     install_requires=[
       # dependencies are in ``requirements.txt`` file.
