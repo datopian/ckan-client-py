@@ -39,7 +39,7 @@ def verify_upload(url, token, file):
 
     response = requests.post(url, body, headers)
     if response.status_code != 200:
-        log.info("Failed to verify upload reponse: {}".format(response.status_code))
+        log.exception("Failed to verify upload reponse: {}".format(response.status_code))
         return
 
     return True
