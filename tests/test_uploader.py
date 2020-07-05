@@ -1,16 +1,16 @@
 from urllib.parse import urljoin
 
-import requests
-import requests_mock
-from lib.index import Uploader
-from lib.file_api import FileSystem
+import mock
+
+from lib.ckan_client import Uploader
+from lib.file import FileSystem
 
 
 config = {
-  'auth_token': 'be270cae-1c77-4853-b8c1-30b6cf5e9878',
-  'api': 'http://127.0.0.1',
-  'organization_id': 'myorg',
-  'dataset_id': 'dataset-name',
+  'auth_token': 'f75160d3-a876-4b43-8a6f-2dc7a693031f',
+  'base_url': 'http://127.0.0.1:5000',
+  'organization_id': 'test-org',
+  'dataset_id': 'xloader_dataset',
 }
 
 ckan_authz_config = {
@@ -40,112 +40,83 @@ access_granter_config = {
 }
 
 cloud_storage_config = {
-  'api': 'https://myaccount.blob.core.windows.net/mycontainer',
+  'base_url': 'https://myaccount.blob.core.windows.net/mycontainer',
   'path': '/my-blob',
   'body': {},
 }
 
-@requests_mock.Mocker()
-def mock_ckan_authz(mock_request):
-    json_resp = {
-        "help": "http://localhost:5000/api/3/action/help_show?name=authz_authorize",
-        "success": True,
-        "result": {
-        "requested_scopes": [
-            "obj:myorg/dataset-name/*:write"
-        ],
-        "granted_scopes": [],
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOiIiLCJ== ",
-        "user_id": "admin",
-        "expires_at": "2020-04-22T20:08:41.102934+00:00"
-        }
-    }
-
-    mock_request.post(urljoin(config['api'], '/api/3/action/authz_authorize'), json=json_resp)
-
-    return requests.post(urljoin(config['api'], '/api/3/action/authz_authorize'),
-                    data=ckan_authz_config['body'])
-
-@requests_mock.Moocker()
-def mock_cloud_storage_access_granter_service(mock_request):
-    json_resp = {
-                'transfer': 'basic',
-                'objects': [
-                    {
-                        'oid': '8857053d874453bbe8e7613b09874e2d8fc9ddffd2130a579ca918301c31b369',
-                        'size': 123,
-                        'authenticated': True,
-                        'actions': {
-                        'upload': {
-                            'href': 'https://myaccount.blob.core.windows.net/mycontainer/my-blob',
-                            'header': access_granter_config['headers'],
-                            'expires_in': 86400,
-                        },
-                        'verify': {
-                            'href': 'https://some-verify-callback.com',
-                            'header': {
-                            'Authorization': 'Bearer TOKEN',
-                            },
-                            'expires_in': 86400,
-                        },
-                        },
-                    },
-                ],
-            }
-    mock_request.post(urljoin(config['api'], '/api/3/action/authz_authorize'), json=json_resp)
-
-    return requests.post(urljoin(config['api'], '/api/3/action/authz_authorize'),
-                    data=access_granter_config['body'])
-
-@requests_mock.Mocker()
-def mock_cloud_storage(mock_request):
-    json_resp = { 'success': True }
-
-    mock_request.put(urljoin(cloud_storage_config['api'], cloud_storage_config['path']), json=json_resp)
-
-    return requests.put(urljoin(cloud_storage_config['api'], cloud_storage_config['path']),
-                    data=cloud_storage_config['body'], headers=access_granter_config['headers'])
-
-@requests_mock.Mocker()
-def mock_verify_file_upload(mock_request):
-    json_resp = {
-            'message': "Verify Uploaded Successfully",
-            'success': True,
-        }
-
-    mock_request.post('https://some-verify-callback.com/', json=json_resp)
-
-    return requests.post('https://some-verify-callback.com/')
-
-
-ckan_uploader = Uploader(config['auth_token'],
+ckan_uploader = Uploader(config['base_url'],
+                config['auth_token'],
                 config['organization_id'],
                 config['dataset_id'],
-                config['api']
             )
 
-file = FileSystem('./test/fixtures/sample.csv')
+file = FileSystem('./tests/sample_file/dailyprices.csv')
 
 def test_can_instantiate_uploader():
-    datahub = Uploader(config['auth_token'],
+    datahub = Uploader(config['base_url'],
+                config['auth_token'],
                 config['organization_id'],
                 config['dataset_id'],
-                config['api']
             )
-    assert datahub.api == config['api']
+    assert datahub.base_url == config['base_url']
 
-def test_push_works_with_packaged_dataset():
+
+get_jwt_from_ckan_authz_json = {
+                    "help": "http://localhost:5000/api/3/action/help_show?name=authz_authorize",
+                    "success": True,
+                    "result": {
+                      "requested_scopes": [
+                          "obj:myorg/dataset-name/*:write"
+                      ],
+                      "granted_scopes": [],
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOiIiLCJ==",
+                      "user_id": "admin",
+                      "expires_at": "2020-04-22T20:08:41.102934+00:00"
+                    }
+                }
+
+request_file_upload_actions_json = {
+            'transfer': 'basic',
+            'objects': [
+                {
+                    'oid': '8857053d874453bbe8e7613b09874e2d8fc9ddffd2130a579ca918301c31b369',
+                    'size': 123,
+                    'authenticated': True,
+                    'actions': {
+                    'upload': {
+                        'href': 'https://myaccount.blob.core.windows.net/mycontainer/my-blob',
+                        'header': access_granter_config['headers'],
+                        'expires_in': 86400,
+                    },
+                    'verify': {
+                        'href': 'https://some-verify-callback.com',
+                        'header': {
+                        'Authorization': 'Bearer TOKEN',
+                        },
+                        'expires_in': 86400,
+                    },
+                    },
+                  },
+              ],
+          }
+
+@mock.patch("lib.util.ckan_auth_api.get_jwt_from_ckan_authz", return_value=get_jwt_from_ckan_authz_json)
+@mock.patch("lib.util.ckan_auth_api.request_file_upload_actions", return_value=request_file_upload_actions_json)
+@mock.patch("lib.util.ckan_upload_api.upload_to_storage", return_value=True)
+@mock.patch("lib.util.ckan_upload_api.verify_upload", return_value=True)
+def test_push_works_with_packaged_dataset(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
+                                          upload_to_storage_mock, verify_upload_mock):
+    import pdb; pdb.set_trace()
+
     token = ckan_uploader.ckan_authz()['result']['token']
     ckan_uploader.push(file, token)
 
-    assert mock_ckan_authz().status_code == 200
-    assert mock_cloud_storage_access_granter_service() == 200
-    assert mock_cloud_storage().status_code == 201
-    assert mock_verify_file_upload().status_code == 200
+    assert token == 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOiIiLCJ=='
 
 def test_dataset_not_altered():
-    size = file.size()
-    sha256 = file.sha256()
+    size = file.get_size()
+    sha256 = file.get_sha256()
 
-    assert size == 701
-    assert sha256 == '7b28186dca74020a82ed969101ff551f97aed110d8737cea4763ce5be3a38b47'
+    assert size == 1691
+    assert sha256 == 'eb0a6b68972615a24502f50e06d6b33fc5f60f3e1d05c5c65c54c2f3248e3c9b'
