@@ -36,7 +36,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: set pythonpath
       run: |
-        echo "::set-env name=PYTHONPATH::home/runner/work/ckan3-py-sdk
+        echo "::add-path::/home/runner/work/ckan3-py-sdk"
     - name: Test with pytest
       run: |
         pytest tests
