@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+from os import listdir
 from urllib.parse import urljoin
 
 import hashlib
@@ -68,6 +69,27 @@ class Client:
         else:
             result['file_already_exists'] == True
 
+    def push_resources(self, list_resources_path=None, resources_directory_path=None):
+        # Upload multiple resources (you can either provide a list of resource or a path to the directory)
+
+        result = []
+        if list_resources_path:
+            for resource_path in list_resources_path:
+                result.append(self.push(resource_path))
+
+        elif resources_directory_path:
+            resources = self.find_csv_filenames(resources_directory_path)
+            for resource in resources:
+                result.append(self.push(os.path.join(resources_directory_path, resource)))
+
+        return result
+
+    def push_dataset_metadata(self):
+        pass
+
+    def push_resource_metadata(self):
+        pass
+
     def get_jwt_from_ckan_authz(self, scope):
         # Get an authorization token from ckanext-authz-service
 
@@ -116,7 +138,6 @@ class Client:
             return
 
         return response.json()
-
 
     def upload_to_storage(self, upload_url, upload_token, file_content, on_progress):
         # Send a POST request with specific payload to the URL given by the Batch API response
@@ -182,3 +203,7 @@ class Client:
 
     def _make_ckan_put_request(self, url, body, headers):
         return requests.put(url, body, headers)
+
+    def find_csv_filenames(self, path_to_dir, suffix=".csv" ):
+        filenames = listdir(path_to_dir)
+        return [filename for filename in filenames if filename.endswith(suffix)]
