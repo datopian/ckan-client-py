@@ -53,7 +53,7 @@ resource = f11s.load(resource_file_path)
 #   }
 
 dataset = f11s.Dataset({'name': dataset_name})
-dataset.add_resorce(resource)
+dataset.add_resource(resource)
 
 # Push the dataset and resources to CKAN and resources to cloud cloud
 res = client_obj.push(dataset.descriptor)
@@ -65,6 +65,8 @@ res = client_obj.push(dataset.descriptor)
 #     'dataset': ...
 #     }]
 
+
+resource_path = 'path/to/file'
 # To push a single resource to ckan and cloud
 # `append` specifies that dataset already exists
 res = client.push_resource(resource_path, dataset='dataset-name', append=True)
