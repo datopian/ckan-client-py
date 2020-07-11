@@ -38,21 +38,43 @@ $ pip install requirements.txt
 
 ## Developers
 ```bash
+from ckan_sdk import f11s
 from ckan_sdk import client
 
-client_obj = client.Client(endpoint, token_api_key, organization_name, dataset_name)
+client_obj = client.Client(endpoint, auth_token, organization_name)
 
-## Porcelain
-client_obj.push('path-to-resource')
+# loads a resource from a path
+resource = f11s.load(resource_file_path)
+# resource = {
+#     name: ...
+#     path: ...
+#     hash: ...
+#     size: ...
+#   }
 
-# you can also push a set of files
-# if directory we search for all *.csv ...
-client_obj.push_resources(resources)
+dataset = f11s.Dataset({'name': dataset_name})
+dataset.add_resorce(resource)
 
-## Plumbing
-client_obj.store_blob()
-client_obj.push_resource_metadata() # resource_update
-client_obj.push_dataset_metadata()  # package_update
+# Push the dataset and resources to CKAN and resources to cloud cloud
+res = client_obj.push(dataset.descriptor)
+# res = [{
+#     'oid': ...
+#     'size': ...
+#     'success': ...
+#     'file_already_exists': ...
+#     'dataset': ...
+#     }]
+
+# To push a single resource to ckan and cloud
+# `append` specifies that dataset already exists
+res = client.push_resource(resource, dataset='dataset-name', append=True)
+# res = [{
+#     'oid': ...
+#     'size': ...
+#     'success': ...
+#     'file_already_exists': ...
+#     'dataset': ...
+#     }]
 ```
 
 ## Design

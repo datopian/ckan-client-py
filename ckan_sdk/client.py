@@ -3,9 +3,11 @@ import json
 import os
 from os import listdir
 from urllib.parse import urljoin
-
 import hashlib
+
 import requests
+
+from ckan_sdk import f11s
 
 log = logging.getLogger(__name__)
 
@@ -13,82 +15,87 @@ log = logging.getLogger(__name__)
 class Client:
     '''
     This is a class for authentiacation and uploading the
-    data to the cloud storage
+    data to the CKAN and cloud storage
 
     Attributes:
         base_url (str): url to the server
         auth_token (str): authetication token for the request
         organization_id (str): name of the organization
-        dataset_id (str): name of the dataset
     '''
 
-    def __init__(self, base_url, auth_token, organization_id, dataset_id):
+    def __init__(self, base_url, auth_token, organization_id):
         self.base_url = base_url
         self.auth_token = auth_token
         self.organization_id = organization_id
-        self.dataset_id = dataset_id
 
-    def push(self, resource_path, on_progress=None):
-        # Given the JWT token and file size, will return signed URL, verify URL and JWT token
+    def push(self, dataset, append=False):
+        # Push resources to CKAN and cloud
 
-        # Get the JWT token from CkanAuthz
-        scope = 'obj:{}/{}/*:write'.format(self.organization_id, self.dataset_id)
-        response = self.get_jwt_from_ckan_authz(scope)
-        jwt_token = response['result']['token']
+        try:
+            resources = dataset.pop('resources')
+        except KeyError:
+            log.exception('There is no resource in the dataset {}'.format(dataset.get('name')))
+            return
 
-        file_info = self.get_file_info(resource_path)
-        lfs_response = self.request_file_upload_actions(jwt_token,
-                             file_info.get('sha256'), file_info.get('size'))
-
-        lfs_object = lfs_response.get('objects')[0]
-        result = {
-            'oid': lfs_object['oid'],
-            'size': lfs_object['size'],
-            'name': file_info.get('name'),
-            'success': True,
-            'file_already_exists': False,
-            }
-
-        # File doesn't exist in storage
-        if lfs_object['actions']:
-
-            # Upload the file to cloud storage
-            actions = lfs_object['actions']
-            upload_url = actions['upload']['href']
-            upload_token = actions['upload']['header']
-            self.upload_to_storage(upload_url, upload_token, file_info.get('content'), on_progress)
-
-            # Verify file to cloud storage
-            verify_url = actions['verify']['href']
-            verify_token = actions['verify']['header']
-            self.verify_upload(verify_url, verify_token, file_info.get('sha256'), file_info.get('size'))
-
-            return result
-
-        # File is already in storage
+        if not append:
+            dataset['owner_org'] = self.organization_id
+            dataset = self._ckan_package_or_resource_create(dataset, 'api/3/action/package_create')['result']
         else:
-            result['file_already_exists'] == True
+            resources = [resources[-1]]
 
-    def push_resources(self, list_resources_path=None, resources_directory_path=None):
-        # Upload multiple resources (you can either provide a list of resource or a path to the directory)
+        res = []
+        for resource in resources:
+            resource['package_id'] = dataset['id']
+            resource = self._ckan_package_or_resource_create(resource, 'api/3/action/resource_create')['result']
 
-        result = []
-        if list_resources_path:
-            for resource_path in list_resources_path:
-                result.append(self.push(resource_path))
+            # Get the JWT token from CkanAuthz
+            scope = 'obj:{}/{}/*:write'.format(self.organization_id, dataset.get('name'))
+            response = self.get_jwt_from_ckan_authz(scope)
+            jwt_token = response['result']['token']
 
-        elif resources_directory_path:
-            resources = self.find_csv_filenames(resources_directory_path)
-            for resource in resources:
-                result.append(self.push(os.path.join(resources_directory_path, resource)))
+            lfs_response = self.request_file_upload_actions(jwt_token,
+                                resource.get('hash'), resource.get('size'),
+                                self.organization_id, dataset.get('name'))
 
-        return result
+            lfs_object = lfs_response.get('objects')[0]
+            result = {
+                'oid': lfs_object['oid'],
+                'size': lfs_object['size'],
+                'success': True,
+                'file_already_exists': False,
+                'dataset': dataset.get('id')
+                }
 
-    def push_dataset_metadata(self):
-        pass
+            # File doesn't exist in storage
+            if lfs_object['actions']:
 
-    def push_resource_metadata(self):
-        pass
+                # Upload the file to cloud storage
+                actions = lfs_object['actions']
+                upload_url = actions['upload']['href']
+                upload_token = actions['upload']['header']
+                self.upload_to_storage(upload_url, upload_token, resource.get('path'))
+
+                # Verify file to cloud storage
+                verify_url = actions['verify']['href']
+                verify_token = actions['verify']['header']
+                self.verify_upload(verify_url, verify_token, resource.get('hash'), resource.get('size'))
+
+            # File is already in storage
+            else:
+                result['file_already_exists'] == True
+            res.append(result)
+
+        return res
+
+    def push_resource(self, resource_path, dataset_name, append=True):
+        # Push resource to a existing dataset if; append is True
+
+        dataset = self._get_ckan_dataset(dataset_name)['result']
+        resource = f11s.load(resource_path)
+        dataset = f11s.Dataset(dataset)
+        dataset.add_resource(resource)
+
+        return self.push(dataset.descriptor, append)
 
     def get_jwt_from_ckan_authz(self, scope):
         # Get an authorization token from ckanext-authz-service
@@ -109,10 +116,10 @@ class Client:
 
         return response.json()
 
-    def request_file_upload_actions(self, jwt_auth_token, file_hash, file_size):
+    def request_file_upload_actions(self, jwt_auth_token, file_hash, file_size, organization, dataset):
         # Send Batch API request to Git LFS server, get upload / verify actions using the authz token
 
-        path = "/{}/{}/objects/batch".format(self.organization_id , self.dataset_id)
+        path = "/{}/{}/objects/batch".format(organization, dataset)
         body = {
                 'operation': 'upload',
                 'transfers': ['basic'],
@@ -139,16 +146,13 @@ class Client:
 
         return response.json()
 
-    def upload_to_storage(self, upload_url, upload_token, file_content, on_progress):
+    def upload_to_storage(self, upload_url, upload_token, file_path):
         # Send a POST request with specific payload to the URL given by the Batch API response
 
-        body = file_content
+        body = open(file_path).read()
         headers ={
             'Authorization': upload_token,
         }
-
-        if on_progress:
-            headers['on_upload_progress'] = on_progress
 
         response = self._make_ckan_put_request(upload_url, body, headers)
         if response.status_code != 201:
@@ -172,38 +176,37 @@ class Client:
 
         response = self._make_ckan_post_request(verify_url, body, headers)
         if response.status_code != 200:
-            log.exception("Failed to verify upload reponse: {}".format(response.status_code))
+            log.exception("Failed to verify upload response: {}".format(response.status_code))
             return
 
         return True
 
-    def get_file_info(self, file_path):
-        # Return a dict with info of the file
-
-        file_info = {}
-        file_info['name'] = os.path.basename(file_path)
-
-        stat_obj = os.stat(file_path)
-        file_info['size'] = stat_obj.st_size
-
-        sha256 = hashlib.sha256()
-
-        with open(file_path, 'rb') as file:
-            file_info['content'] = file.read()
-
-            for block in iter(lambda: file.read(50000), b''):
-                sha256.update(block)
-
-            file_info['sha256'] = sha256.hexdigest()
-
-        return file_info
-
     def _make_ckan_post_request(self, url, body, headers):
-        return requests.post(url, body, headers)
+        return requests.post(url, body, headers=headers)
 
     def _make_ckan_put_request(self, url, body, headers):
-        return requests.put(url, body, headers)
+        return requests.put(url, body, headers=headers)
 
-    def find_csv_filenames(self, path_to_dir, suffix=".csv" ):
-        filenames = listdir(path_to_dir)
-        return [filename for filename in filenames if filename.endswith(suffix)]
+    def _make_ckan_get_request(self, url, body, headers):
+        return requests.get(url, body, headers=headers)
+
+    def _ckan_package_or_resource_create(self, data, api):
+        url = urljoin(self.base_url, api)
+        headers = {'Authorization': self.auth_token}
+
+        response = self._make_ckan_post_request(url, data, headers)
+        if response.status_code != 200:
+            log.exception("Failed to create {} in CKAN: {}".format(data['name'], response.json()['error']))
+            return
+        return response.json()
+
+    def _get_ckan_dataset(self, dataset_name):
+        url = urljoin(self.base_url, 'api/3/action/package_show')
+        headers = {'Authorization': self.auth_token}
+        params = {'id': dataset_name}
+
+        response = self._make_ckan_get_request(url, params, headers)
+        if response.status_code != 200:
+            log.exception("Failed to create a dataset to CKAN")
+            return
+        return response.json()
