@@ -67,7 +67,7 @@ res = client_obj.push(dataset.descriptor)
 
 # To push a single resource to ckan and cloud
 # `append` specifies that dataset already exists
-res = client.push_resource(resource, dataset='dataset-name', append=True)
+res = client.push_resource(resource_path, dataset='dataset-name', append=True)
 # res = [{
 #     'oid': ...
 #     'size': ...
