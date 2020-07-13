@@ -56,7 +56,7 @@ dataset = f11s.Dataset({'name': dataset_name})
 dataset.add_resource(resource)
 
 # Push the dataset and resources to CKAN and resources to cloud cloud
-res = client_obj.push(dataset.descriptor)
+res = client_obj.push(dataset)
 # res = [{
 #     'oid': ...
 #     'size': ...

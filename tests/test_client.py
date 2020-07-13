@@ -113,7 +113,7 @@ def test_push(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
     resource = f11s.load('./tests/sample_file/dailyprices.csv')
     dataset = f11s.Dataset({'name': 'test-dataset'})
     dataset.add_resource(resource)
-    result = ckan_uploader.push(dataset.descriptor)[0]
+    result = ckan_uploader.push(dataset)[0]
 
     assert result['success'] == True
     assert result['size'] == 1691
