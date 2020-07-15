@@ -135,3 +135,16 @@ def test_push_resource_with_existing_dataset(get_jwt_from_ckan_authz_mock, reque
     assert result['success'] == True
     assert result['size'] == 1691
     assert result['oid'] == 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+
+@mock.patch("ckan_sdk.client.Client.get_jwt_from_ckan_authz", return_value=get_jwt_from_ckan_authz_json)
+@mock.patch("ckan_sdk.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
+@mock.patch("ckan_sdk.client.Client.upload_to_storage", return_value=True)
+@mock.patch("ckan_sdk.client.Client.verify_upload", return_value=True)
+def test_store_blob(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
+                                          upload_to_storage_mock, verify_upload_mock):
+
+    result = ckan_uploader.store_blob('./tests/sample_file/dailyprices.csv')
+
+    assert result['success'] == True
+    assert result['size'] == 1691
+    assert result['oid'] == 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
