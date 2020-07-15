@@ -85,7 +85,8 @@ class Client:
             and dataset.
         '''
 
-        dataset = self._get_ckan_dataset(dataset_name)['result']
+        if append:
+            dataset = self._get_ckan_dataset(dataset_name)['result']
         resource = f11s.load(resource_path)
         dataset = f11s.Dataset(dataset)
         dataset.add_resource(resource)
