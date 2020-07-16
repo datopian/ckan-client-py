@@ -3,7 +3,7 @@
 # Ckan3-py-sdk
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/datopian/ckan3-py-sdk/issues)
-![Python package](https://github.com/datopian/ckan3-py-sdk/workflows/Python%20package/badge.svg)
+![ckan3-py-sdk actions](https://github.com/datopian/ckan3-py-sdk/workflows/ckan3-py-sdk%20actions/badge.svg)
 [![The MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
 
