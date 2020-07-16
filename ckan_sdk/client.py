@@ -64,7 +64,7 @@ class Client:
         for resource in resources:
             resource['package_id'] = dataset['id']
 
-            result = self.__call_all_api_to_push_resource(resource, dataset, to_ckan=True)
+            result = self._call_all_api_to_push_resource(resource, dataset, to_ckan=True)
             res.append(result)
 
         return res
@@ -106,9 +106,9 @@ class Client:
         '''
 
         resource = f11s.load(resource_path)
-        return self.__call_all_api_to_push_resource(resource)
+        return self._call_all_api_to_push_resource(resource)
 
-    def __call_all_api_to_push_resource(self, resource, dataset=None, to_ckan=False):
+    def _call_all_api_to_push_resource(self, resource, dataset=None, to_ckan=False):
 
         if to_ckan:
             scope = 'obj:{}/{}/*:write'.format(self.organization_id, dataset.get('name'))
@@ -200,6 +200,7 @@ class Client:
         jwt_auth_token (str): Jwt token from ckan-authz.
         file_hash (str): sha256 has of the file.
         file_size (str): size of the file in bytes.
+        path (str): base request path for upload actions.
 
         Returns:
         dict: contains the json response of the request.
