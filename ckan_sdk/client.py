@@ -43,7 +43,7 @@ class Client:
 
         Returns:
         list of dict: contains oid, size, success, file_already_exists
-            and dataset keys and their values.
+            and dataset.
         '''
 
         dataset = dataset.descriptor
@@ -64,43 +64,7 @@ class Client:
         for resource in resources:
             resource['package_id'] = dataset['id']
 
-            # Get the JWT token from CkanAuthz
-            scope = 'obj:{}/{}/*:write'.format(self.organization_id, dataset.get('name'))
-            response = self.get_jwt_from_ckan_authz(scope)
-            jwt_token = response['result']['token']
-
-            lfs_response = self.request_file_upload_actions(jwt_token,
-                                resource.get('hash'), resource.get('size'),
-                                dataset.get('name'))
-
-            lfs_object = lfs_response.get('objects')[0]
-            result = {
-                'oid': lfs_object['oid'],
-                'size': lfs_object['size'],
-                'success': False,
-                'file_already_exists': False,
-                'dataset': dataset.get('id')
-                }
-
-            # File doesn't exist in storage
-            if lfs_object['actions']:
-
-                # Upload the file to cloud storage
-                actions = lfs_object['actions']
-                upload_url = actions['upload']['href']
-                upload_token = actions['upload']['header']
-                self.upload_to_storage(upload_url, upload_token, resource.get('path'))
-
-                # Verify file to cloud storage
-                verify_url = actions['verify']['href']
-                verify_token = actions['verify']['header']
-                if self.verify_upload(verify_url, verify_token, resource.get('hash'), resource.get('size')):
-                    result['success'] = True
-                    resource = self._ckan_package_or_resource_create(resource, 'api/3/action/resource_create')['result']
-
-            # File is already in storage
-            else:
-                result['file_already_exists'] == True
+            result = self.__call_all_api_to_push_resource(resource, dataset, to_ckan=True)
             res.append(result)
 
         return res
@@ -118,15 +82,86 @@ class Client:
 
         Returns:
         list of dict: contains oid, size, success, file_already_exists
-            and dataset keys and their values.
+            and dataset.
         '''
 
-        dataset = self._get_ckan_dataset(dataset_name)['result']
+        if append:
+            dataset = self._get_ckan_dataset(dataset_name)['result']
         resource = f11s.load(resource_path)
         dataset = f11s.Dataset(dataset)
         dataset.add_resource(resource)
 
         return self.push(dataset, append)
+
+    def store_blob(self, resource_path):
+        '''
+        This function is to push a single resource to cloud.
+
+        Parameters:
+        resource_path (str): path to the file.
+
+        Returns:
+        dict: contains oid, size, success, file_already_exists,
+            verify_url and verify_token.
+        '''
+
+        resource = f11s.load(resource_path)
+        return self.__call_all_api_to_push_resource(resource)
+
+    def __call_all_api_to_push_resource(self, resource, dataset=None, to_ckan=False):
+
+        if to_ckan:
+            scope = 'obj:{}/{}/*:write'.format(self.organization_id, dataset.get('name'))
+            request_path = "/{}/{}/objects/batch".format(self.organization_id, dataset)
+
+        else:
+            scope = 'obj:{}/*:write'.format(self.organization_id)
+            request_path = "/{}/objects/batch".format(self.organization_id)
+
+        # Get the JWT token from CkanAuthz
+        response = self.get_jwt_from_ckan_authz(scope)
+        jwt_token = response['result']['token']
+
+        lfs_response = self.request_file_upload_actions(jwt_token,
+                            resource.get('hash'), resource.get('size'),
+                            request_path)
+
+        lfs_object = lfs_response.get('objects')[0]
+        result = {
+            'oid': lfs_object['oid'],
+            'size': lfs_object['size'],
+            'success': False,
+            'file_already_exists': False,
+            }
+
+        # File doesn't exist in storage
+        if lfs_object['actions']:
+
+            # Upload the file to cloud storage
+            actions = lfs_object['actions']
+            upload_url = actions['upload']['href']
+            upload_token = actions['upload']['header']
+            self.upload_to_storage(upload_url, upload_token, resource.get('path'))
+
+            # Verify file to cloud storage
+            verify_url = actions['verify']['href']
+            verify_token = actions['verify']['header']
+
+            if to_ckan:
+                if self.verify_upload(verify_url, verify_token, resource.get('hash'), resource.get('size')):
+                    result['success'] = True
+                    result['dataset']: dataset.get('id')
+                    resource = self._ckan_package_or_resource_create(resource, 'api/3/action/resource_create')['result']
+            else:
+                if self.verify_upload(verify_url, verify_token, resource.get('hash'), resource.get('size')):
+                    result['success']= True
+                    result['verify_url'] = verify_url
+                    result['verify_token']= verify_token
+        # File is already in storage
+        else:
+            result['file_already_exists'] == True
+
+        return result
 
     def get_jwt_from_ckan_authz(self, scope):
         '''
@@ -156,7 +191,7 @@ class Client:
 
         return response.json()
 
-    def request_file_upload_actions(self, jwt_auth_token, file_hash, file_size, dataset):
+    def request_file_upload_actions(self, jwt_auth_token, file_hash, file_size, path):
         '''
         This function is to send a batch request
         to the lfs with JWT token.
@@ -165,13 +200,11 @@ class Client:
         jwt_auth_token (str): Jwt token from ckan-authz.
         file_hash (str): sha256 has of the file.
         file_size (str): size of the file in bytes.
-        dataset (str): name of the dataset.
 
         Returns:
         dict: contains the json response of the request.
         '''
 
-        path = "/{}/{}/objects/batch".format(self.organization, dataset)
         body = {
                 'operation': 'upload',
                 'transfers': ['basic'],
