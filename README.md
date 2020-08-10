@@ -1,6 +1,6 @@
 <div align="center">
 
-# Ckan3-py-sdk
+# ckan3-py-sdk
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/datopian/ckan3-py-sdk/issues)
 ![ckan3-py-sdk actions](https://github.com/datopian/ckan3-py-sdk/workflows/ckan3-py-sdk%20actions/badge.svg)
@@ -37,14 +37,19 @@ $ pip install requirements.txt
 ```
 
 ## Developers
-```bash
+
+```python
 from ckan_sdk import f11s
 from ckan_sdk import client
 
+endpoint = 'https://my-ckan.com/'
+auth_token = 'xxxx'                   # your CKAN API key
+organization_name = 'my-organization' # the default organization on CKAN to add datasets to
 client_obj = client.Client(endpoint, auth_token, organization_name)
 
 # loads a resource from a path
 resource = f11s.load(resource_file_path)
+print(resource)
 # resource = {
 #     name: ...
 #     path: ...
@@ -57,6 +62,7 @@ dataset.add_resource(resource)
 
 # Push the dataset and resources to CKAN and resources to cloud cloud
 res = client_obj.push(dataset)
+print(res)
 # res = [{
 #     'oid': ...
 #     'size': ...
@@ -70,6 +76,7 @@ resource_path = 'path/to/file'
 # To push a single resource to ckan and cloud
 # `append` specifies that dataset already exists
 res = client.push_resource(resource_path, dataset='dataset-name', append=True)
+print(res)
 # res = [{
 #     'oid': ...
 #     'size': ...
@@ -100,7 +107,7 @@ res = client.store_blob(resource_path)
 To run tests:
 
 ```bash
- pytest tests
+pytest tests
 ```
 
 ## License
