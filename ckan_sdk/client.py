@@ -150,7 +150,7 @@ class Client:
             if to_ckan:
                 if self.verify_upload(verify_url, verify_token, resource.get('hash'), resource.get('size')):
                     result['success'] = True
-                    result['dataset']: dataset.get('id')
+                    result['dataset'] = dataset.get('id')
                     resource = self._ckan_package_or_resource_create(resource, 'api/3/action/resource_create')['result']
             else:
                 if self.verify_upload(verify_url, verify_token, resource.get('hash'), resource.get('size')):
