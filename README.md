@@ -57,13 +57,16 @@ print(resource)
 #     size: ...
 #   }
 
-dataset = f11s.Dataset({'name': dataset_name})
+# Create dataset object with dataset name
+dataset = f11s.Dataset({'name': 'sample-dataset'})
+
+# Add resource in dataset object
 dataset.add_resource(resource)
 
-# Push the dataset and resources to CKAN and resources to cloud cloud
-res = client_obj.push(dataset)
-print(res)
-# res = [{
+# Push the dataset and resources to CKAN and resources to cloud
+response = client_obj.push(dataset)
+print(response)
+# response = [{
 #     'oid': ...
 #     'size': ...
 #     'success': ...
@@ -75,9 +78,9 @@ print(res)
 resource_path = 'path/to/file'
 # To push a single resource to ckan and cloud
 # `append` specifies that dataset already exists
-res = client.push_resource(resource_path, dataset='dataset-name', append=True)
-print(res)
-# res = [{
+response = client.push_resource(resource_path, dataset='dataset-name', append=True)
+print(response)
+# response = [{
 #     'oid': ...
 #     'size': ...
 #     'success': ...
@@ -87,14 +90,46 @@ print(res)
 
 
 # To push a single resource to cloud only
-res = client.store_blob(resource_path)
-# res = {
+response = client.store_blob(resource_path)
+print(response)
+# response = {
 #     'oid': ...
 #     'size': ...
 #     'success': ...
 #     'file_already_exists': ...
 #     'verify_url': ...
 #     'verify_token': ...
+#     }
+
+
+# Create dataset object with metadata
+dataset = f11s.Dataset({'name': 'sample-dataset', 'title': 'sample-dataset',
+                        'owner_org': 'my-organization', 'maintainer': 'datopian',
+                        'maintainer_email': 'maintainer@datopian.com', 'author': 'datopian,
+                        'notes': 'This is sample dataset'})
+
+# Push the dataset and resources with metadata to CKAN and resources to cloud
+response = client_obj.push(dataset)
+print(response)
+# response = {
+#     'id': ...
+#     'name': ...
+#     'title': ...
+#     'owner_org': ...
+#     'author': ...
+#     'private': ...
+#     }
+
+# To update dataset with metadata in CKAN
+dataset = client.update_dataset(dataset)
+print(dataset)
+# dataset = {
+#     'id': ...
+#     'name': ...
+#     'title': ...
+#     'owner_org': ...
+#     'author': ...
+#     'private': ...
 #     }
 ```
 

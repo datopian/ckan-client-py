@@ -105,10 +105,10 @@ resource_resp = {
 @mock.patch("ckan_sdk.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
 @mock.patch("ckan_sdk.client.Client.upload_to_storage", return_value=True)
 @mock.patch("ckan_sdk.client.Client.verify_upload", return_value=True)
-@mock.patch("ckan_sdk.client.Client._ckan_package_or_resource_create", side_effect = [dataset_resp, resource_resp])
+@mock.patch("ckan_sdk.client.Client._ckan_package_or_resource_api_call", side_effect = [dataset_resp, resource_resp])
 def test_push(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
                                           upload_to_storage_mock, verify_upload_mock
-                                          ,_ckan_package_or_resource_create_mock):
+                                          ,_ckan_package_or_resource_api_call_mock):
 
     resource = f11s.load('./tests/sample_file/dailyprices.csv')
     dataset = f11s.Dataset({'name': 'test-dataset'})
@@ -123,11 +123,11 @@ def test_push(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
 @mock.patch("ckan_sdk.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
 @mock.patch("ckan_sdk.client.Client.upload_to_storage", return_value=True)
 @mock.patch("ckan_sdk.client.Client.verify_upload", return_value=True)
-@mock.patch("ckan_sdk.client.Client._ckan_package_or_resource_create", return_value = resource_resp)
+@mock.patch("ckan_sdk.client.Client._ckan_package_or_resource_api_call", return_value = resource_resp)
 @mock.patch("ckan_sdk.client.Client._get_ckan_dataset", return_value = dataset_resp)
 def test_push_resource_with_existing_dataset(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
                                           upload_to_storage_mock, verify_upload_mock,
-                                          _ckan_package_or_resource_create_mock,
+                                          _ckan_package_or_resource_api_call_mock,
                                           _get_ckan_dataset_mock):
 
     result = ckan_uploader.push_resource('./tests/sample_file/dailyprices.csv', 'test-dataset')[0]
