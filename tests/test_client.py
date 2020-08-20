@@ -101,11 +101,11 @@ resource_resp = {
     }
   }
 
-@mock.patch("ckan_sdk.client.Client.get_jwt_from_ckan_authz", return_value=get_jwt_from_ckan_authz_json)
-@mock.patch("ckan_sdk.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
-@mock.patch("ckan_sdk.client.Client.upload_to_storage", return_value=True)
-@mock.patch("ckan_sdk.client.Client.verify_upload", return_value=True)
-@mock.patch("ckan_sdk.client.Client._ckan_package_or_resource_api_call", side_effect = [dataset_resp, resource_resp])
+@mock.patch("ckanclient.client.Client.get_jwt_from_ckan_authz", return_value=get_jwt_from_ckan_authz_json)
+@mock.patch("ckanclient.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
+@mock.patch("ckanclient.client.Client.upload_to_storage", return_value=True)
+@mock.patch("ckanclient.client.Client.verify_upload", return_value=True)
+@mock.patch("ckanclient.client.Client._ckan_package_or_resource_api_call", side_effect = [dataset_resp, resource_resp])
 def test_push(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
                                           upload_to_storage_mock, verify_upload_mock
                                           ,_ckan_package_or_resource_api_call_mock):
@@ -119,12 +119,12 @@ def test_push(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
     assert result['size'] == 1691
     assert result['oid'] == 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
 
-@mock.patch("ckan_sdk.client.Client.get_jwt_from_ckan_authz", return_value=get_jwt_from_ckan_authz_json)
-@mock.patch("ckan_sdk.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
-@mock.patch("ckan_sdk.client.Client.upload_to_storage", return_value=True)
-@mock.patch("ckan_sdk.client.Client.verify_upload", return_value=True)
-@mock.patch("ckan_sdk.client.Client._ckan_package_or_resource_api_call", return_value = resource_resp)
-@mock.patch("ckan_sdk.client.Client._get_ckan_dataset", return_value = dataset_resp)
+@mock.patch("ckanclient.client.Client.get_jwt_from_ckan_authz", return_value=get_jwt_from_ckan_authz_json)
+@mock.patch("ckanclient.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
+@mock.patch("ckanclient.client.Client.upload_to_storage", return_value=True)
+@mock.patch("ckanclient.client.Client.verify_upload", return_value=True)
+@mock.patch("ckanclient.client.Client._ckan_package_or_resource_api_call", return_value = resource_resp)
+@mock.patch("ckanclient.client.Client._get_ckan_dataset", return_value = dataset_resp)
 def test_push_resource_with_existing_dataset(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
                                           upload_to_storage_mock, verify_upload_mock,
                                           _ckan_package_or_resource_api_call_mock,
@@ -136,10 +136,10 @@ def test_push_resource_with_existing_dataset(get_jwt_from_ckan_authz_mock, reque
     assert result['size'] == 1691
     assert result['oid'] == 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
 
-@mock.patch("ckan_sdk.client.Client.get_jwt_from_ckan_authz", return_value=get_jwt_from_ckan_authz_json)
-@mock.patch("ckan_sdk.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
-@mock.patch("ckan_sdk.client.Client.upload_to_storage", return_value=True)
-@mock.patch("ckan_sdk.client.Client.verify_upload", return_value=True)
+@mock.patch("ckanclient.client.Client.get_jwt_from_ckan_authz", return_value=get_jwt_from_ckan_authz_json)
+@mock.patch("ckanclient.client.Client.request_file_upload_actions", return_value=request_file_upload_actions_json)
+@mock.patch("ckanclient.client.Client.upload_to_storage", return_value=True)
+@mock.patch("ckanclient.client.Client.verify_upload", return_value=True)
 def test_store_blob(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mock,
                                           upload_to_storage_mock, verify_upload_mock):
 
