@@ -2,8 +2,8 @@ from urllib.parse import urljoin
 
 import mock
 
-from ckan_sdk.client import Client
-from ckan_sdk import f11s
+from ckanclient.client import Client
+from ckanclient import f11s
 
 
 config = {

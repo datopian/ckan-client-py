@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: ckan3-py-sdk actions
+name: ckan-client-py actions
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: set pythonpath
       run: |
-        echo "::set-env name=PYTHONPATH::/home/runner/work/ckan3-py-sdk/ckan3-py-sdk"
+        echo "::set-env name=PYTHONPATH::/home/runner/work/ckan-client-py/ckan-client-py"
     - name: Test with pytest
       run: |
         pytest tests

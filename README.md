@@ -1,6 +1,6 @@
 <div align="center">
 
-# ckan3-py-sdk
+# ckan-client-py
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/datopian/ckan3-py-sdk/issues)
 ![ckan3-py-sdk actions](https://github.com/datopian/ckan3-py-sdk/workflows/ckan3-py-sdk%20actions/badge.svg)
@@ -17,13 +17,13 @@ CKAN 3 SDK for CKAN instances with CKAN v3 style cloud storage.<br> This SDK wil
 First, clone the repo via git:
 
 ```bash
-$ git clone git@github.com:datopian/ckan3-py-sdk.git
+$ git clone https://github.com/datopian/ckan-client-py.git
 ```
 
 Move to directory:
 
 ```bash
-$ cd ckan3-py-sdk
+$ cd ckan-client-py
 ```
 Install the package:
 
@@ -39,13 +39,13 @@ $ pip install requirements.txt
 ## Developers
 
 ```python
-from ckan_sdk import f11s
-from ckan_sdk import client
+from ckanclient import f11s
+from ckanclient.client import Client
 
 endpoint = 'https://my-ckan.com/'
 auth_token = 'xxxx'                   # your CKAN API key
 organization_name = 'my-organization' # the default organization on CKAN to add datasets to
-client_obj = client.Client(endpoint, auth_token, organization_name)
+client = Client(endpoint, auth_token, organization_name)
 
 # loads a resource from a path
 resource = f11s.load(resource_file_path)
@@ -64,7 +64,7 @@ dataset = f11s.Dataset({'name': 'sample-dataset'})
 dataset.add_resource(resource)
 
 # Push the dataset and resources to CKAN and resources to cloud
-response = client_obj.push(dataset)
+response = client.push(dataset)
 print(response)
 # response = [{
 #     'oid': ...
@@ -109,7 +109,7 @@ dataset = f11s.Dataset({'name': 'sample-dataset', 'title': 'sample-dataset',
                         'notes': 'This is sample dataset'})
 
 # Push the dataset and resources with metadata to CKAN and resources to cloud
-response = client_obj.push(dataset)
+response = client.push(dataset)
 print(response)
 # response = {
 #     'id': ...
