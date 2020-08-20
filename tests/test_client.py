@@ -1,5 +1,5 @@
-from urllib.parse import urljoin
-
+#from urllib.parse import urljoin
+from urlparse import urljoin
 import mock
 
 from ckanclient.client import Client
@@ -148,3 +148,14 @@ def test_store_blob(get_jwt_from_ckan_authz_mock, request_file_upload_actions_mo
     assert result['success'] == True
     assert result['size'] == 1691
     assert result['oid'] == 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+
+@mock.patch("ckanclient.client.Client._ckan_package_or_resource_api_call", side_effect = dataset_resp)
+def test_update_dataset(_ckan_package_or_resource_api_call_mock):
+
+  
+  dataset = f11s.Dataset({'name': 'test-dataset', 'id': 'abc-123-xyz-321', 'owner_org': 'test-org'})
+ 
+  result = ckan_uploader.update_dataset(dataset)
+  assert result['id']=='abc-123-xyz-321'
+  assert result['name'] == 'test-dataset'
+  assert result['owner_org'] == 'test-org'
