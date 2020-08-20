@@ -1,5 +1,4 @@
-#from urllib.parse import urljoin
-from urlparse import urljoin
+from urllib.parse import urljoin
 import mock
 
 from ckanclient.client import Client
