@@ -39,3 +39,20 @@ class Dataset:
         self.descriptor['resources'] = []
         self.descriptor['resources'].append(resource_descriptor)
         return resource_descriptor
+
+    def add_metadata(self, name, owner_org, title = None, maintainer = None,
+                    maintainer_email = None, publisher = None, author = None, license_id = None,
+                    notes = None, investment_ids = None, geographic_level = None,
+                    information_classification = None):
+        self.descriptor['name'] = name
+        self.descriptor['title'] = title
+        self.descriptor['owner_org'] = owner_org
+        self.descriptor['maintainer'] = maintainer
+        self.descriptor['maintainer_email'] = maintainer_email
+        self.descriptor['publisher'] = publisher
+        self.descriptor['author'] = author
+        self.descriptor['license_id'] = license_id
+        self.descriptor['notes'] = notes
+        self.descriptor['investment_ids'] = investment_ids
+        self.descriptor['geographic_level'] = geographic_level
+        self.descriptor['information_classification'] = information_classification

@@ -4,10 +4,9 @@ import os
 from os import listdir
 from urllib.parse import urljoin
 import hashlib
-
 import requests
 
-from ckan_sdk import f11s
+from ckanclient import f11s
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ class Client:
         '''
         This function is to push the resource/resources to ckan
         and cloud.
-        It also creates dataset to the ckan (if apeend=False)
+        It also creates dataset to the ckan (if append=False)
         within the oraganization that is passed to the constructor.
 
         Parameters:
@@ -49,14 +48,14 @@ class Client:
         dataset = dataset.descriptor
         dataset['owner_org'] = self.organization_id
         if not dataset.get('resources'):
-            dataset = self._ckan_package_or_resource_create(dataset, 'api/3/action/package_create')['result']
+            dataset = self._ckan_package_or_resource_api_call(dataset, 'api/3/action/package_create')['result']
             log.info('There is no resource in the dataset')
             return
         else:
             resources = dataset.pop('resources')
 
         if not append:
-            dataset = self._ckan_package_or_resource_create(dataset, 'api/3/action/package_create')['result']
+            dataset = self._ckan_package_or_resource_api_call(dataset, 'api/3/action/package_create')['result']
         else:
             resources = [resources[-1]]
 
@@ -108,6 +107,25 @@ class Client:
         resource = f11s.load(resource_path)
         return self._call_all_api_to_push_resource(resource)
 
+    def update_dataset(self, dataset):
+        '''
+        This function is to update a dataset (not Resources) to ckan .
+
+        Parameters:
+        dataset (object): object of a f11s.Dataset class which contains
+                          metadata of dataset.
+
+        Returns:
+        dataset object: contains updated dataset information
+        '''
+        dataset = dataset.descriptor
+        #pop resources if exists in dataset
+        if dataset.get('resources'):
+            dataset.pop('resources')
+
+        dataset = self._ckan_package_or_resource_api_call(dataset, 'api/3/action/package_update')['result']
+        return dataset
+
     def _call_all_api_to_push_resource(self, resource, dataset=None, to_ckan=False):
 
         if to_ckan:
@@ -151,15 +169,15 @@ class Client:
                 if self.verify_upload(verify_url, verify_token, resource.get('hash'), resource.get('size')):
                     result['success'] = True
                     result['dataset'] = dataset.get('id')
-                    resource = self._ckan_package_or_resource_create(resource, 'api/3/action/resource_create')['result']
+                    resource = self._ckan_package_or_resource_api_call(resource, 'api/3/action/resource_create')['result']
             else:
                 if self.verify_upload(verify_url, verify_token, resource.get('hash'), resource.get('size')):
-                    result['success']= True
+                    result['success'] = True
                     result['verify_url'] = verify_url
-                    result['verify_token']= verify_token
+                    result['verify_token'] = verify_token
         # File is already in storage
         else:
-            result['file_already_exists'] == True
+            result['file_already_exists'] = True
 
         return result
 
@@ -299,7 +317,7 @@ class Client:
     def __make_ckan_get_request(self, url, body, headers):
         return requests.get(url, body, headers=headers)
 
-    def _ckan_package_or_resource_create(self, data, api):
+    def _ckan_package_or_resource_api_call(self, data, api):
         # create package or resource in the ckan instance
 
         url = urljoin(self.base_url, api)
