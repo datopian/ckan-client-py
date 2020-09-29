@@ -3,7 +3,7 @@
 # ckan-client-py
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/datopian/ckan3-py-sdk/issues)
-![ckan3-py-sdk actions](https://github.com/datopian/ckan3-py-sdk/workflows/ckan3-py-sdk%20actions/badge.svg)
+[![ckan-client-py actions](https://github.com/datopian/ckan-client-py/workflows/ckan-client-py%20actions/badge.svg)](https://github.com/datopian/ckan-client-py/actions?query=workflow%3A%22ckan-client-py+actions%22)
 [![The MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
 
