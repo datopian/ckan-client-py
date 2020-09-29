@@ -28,12 +28,7 @@ $ cd ckan-client-py
 Install the package:
 
 ```bash
-$ python setup.py install
-```
-Install requirements.txt:
-
-```bash
-$ pip install requirements.txt
+$ pip install -e .
 ```
 
 ## Developers
@@ -142,7 +137,8 @@ print(dataset)
 To run tests:
 
 ```bash
-pytest tests
+$ pip install pytest
+$ pytest
 ```
 
 ## License

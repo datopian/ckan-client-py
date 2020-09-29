@@ -1,9 +1,7 @@
-import logging
 import json
-import os
-from os import listdir
+import logging
 from urllib.parse import urljoin
-import hashlib
+
 import requests
 
 from ckanclient import f11s

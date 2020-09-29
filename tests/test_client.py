@@ -1,6 +1,5 @@
+from unittest import mock
 from urllib.parse import urljoin
-
-import mock
 
 from ckanclient.client import Client
 from ckanclient import f11s

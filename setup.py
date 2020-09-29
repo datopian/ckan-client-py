@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
-from codecs import open  # To use a consistent encoding
 from os import path
 
 here = path.abspath(path.dirname(__file__))
@@ -48,9 +46,7 @@ setup(
     # What does your project relate to?
     keywords='CKAN API UPLOAD CLOUD',
 
-    install_requires=[
-      # dependencies are in ``requirements.txt`` file.
-    ],
+    install_requires=["requests"],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
