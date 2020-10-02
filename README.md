@@ -1,144 +1,150 @@
 <div align="center">
 
-# ckan-client-py
+# CKAN Client: Python SDK
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/datopian/ckan3-py-sdk/issues)
 [![ckan-client-py actions](https://github.com/datopian/ckan-client-py/workflows/ckan-client-py%20actions/badge.svg)](https://github.com/datopian/ckan-client-py/actions?query=workflow%3A%22ckan-client-py+actions%22)
-[![The MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+[![The MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
+CKAN 3 SDK for CKAN instances with CKAN v3 style cloud storage.<br> This SDK will communicate with [`ckanext-authz-service`](https://github.com/datopian/ckanext-authz-service) (using CKAN to provide authorization tokens for other related systems) and [Giftless](https://github.com/datopian/giftless) (a highly customizable and extensible Git LFS server implemented in Python) to upload data to blob storage.
 
-CKAN 3 SDK for CKAN instances with CKAN v3 style cloud storage.<br> This SDK will communicate with [Ckanext-authz-service](https://github.com/datopian/ckanext-authz-service)(Use CKAN to provide authorization tokens for other related systems
-), [giftless service](https://github.com/datopian/giftless)(A highly customizable and extensible Git LFS server implemented in Python) and uploading to Blob storage.
+Read more about [it's design](http://tech.datopian.com/blob-storage/#direct-to-cloud-upload).
 
 </div>
 
 ## Install
 
-First, clone the repo via git:
+All you need is [Git](https://git-scm.com/), and [Python](https://www.python.org/) 3.6+ with a [PEP 527](https://www.python.org/dev/peps/pep-0517/) compliant tool, such as [Poetry](https://python-poetry.org/).
 
-```bash
+First, clone this repository:
+
+```console
 $ git clone https://github.com/datopian/ckan-client-py.git
 ```
 
-Move to directory:
+Then, move to is directory:
 
-```bash
+```console
 $ cd ckan-client-py
 ```
-Install the package:
+And install the package and its dependencies, for example, with Poetry:
 
-```bash
-$ pip install -e .
+```console
+$ poetry install
 ```
 
-## Developers
+## Usage
+
+### `ckanclient.CkanClient`
+
+Arguments:
+
+| Name           | Description       |
+| -------------- | ----------------- |
+| `api_url`      | CKAN API key      |
+| `api_key`      | CKAN instance URL |
+| `organization` | Organization      |
+| `dataset_id`   | Dataset id        |
+| `lfs_url`      | Git LFS URL       |
+
+
+Example:
 
 ```python
-from ckanclient import f11s
-from ckanclient.client import Client
-
-endpoint = 'https://my-ckan.com/'
-auth_token = 'xxxx'                   # your CKAN API key
-organization_name = 'my-organization' # the default organization on CKAN to add datasets to
-client = Client(endpoint, auth_token, organization_name)
-
-# loads a resource from a path
-resource = f11s.load(resource_file_path)
-print(resource)
-# resource = {
-#     name: ...
-#     path: ...
-#     hash: ...
-#     size: ...
-#   }
-
-# Create dataset object with dataset name
-dataset = f11s.Dataset({'name': 'sample-dataset'})
-
-# Add resource in dataset object
-dataset.add_resource(resource)
-
-# Push the dataset and resources to CKAN and resources to cloud
-response = client.push(dataset)
-print(response)
-# response = [{
-#     'oid': ...
-#     'size': ...
-#     'success': ...
-#     'file_already_exists': ...
-#     'dataset': ...
-#     }]
+from ckanclient import CkanClient
 
 
-resource_path = 'path/to/file'
-# To push a single resource to ckan and cloud
-# `append` specifies that dataset already exists
-response = client.push_resource(resource_path, dataset='dataset-name', append=True)
-print(response)
-# response = [{
-#     'oid': ...
-#     'size': ...
-#     'success': ...
-#     'file_already_exists': ...
-#     'dataset': ...
-#     }]
-
-
-# To push a single resource to cloud only
-response = client.store_blob(resource_path)
-print(response)
-# response = {
-#     'oid': ...
-#     'size': ...
-#     'success': ...
-#     'file_already_exists': ...
-#     'verify_url': ...
-#     'verify_token': ...
-#     }
-
-
-# Create dataset object with metadata
-dataset = f11s.Dataset({'name': 'sample-dataset', 'title': 'sample-dataset',
-                        'owner_org': 'my-organization', 'maintainer': 'datopian',
-                        'maintainer_email': 'maintainer@datopian.com', 'author': 'datopian,
-                        'notes': 'This is sample dataset'})
-
-# Push the dataset and resources with metadata to CKAN and resources to cloud
-response = client.push(dataset)
-print(response)
-# response = {
-#     'id': ...
-#     'name': ...
-#     'title': ...
-#     'owner_org': ...
-#     'author': ...
-#     'private': ...
-#     }
-
-# To update dataset with metadata in CKAN
-dataset = client.update_dataset(dataset)
-print(dataset)
-# dataset = {
-#     'id': ...
-#     'name': ...
-#     'title': ...
-#     'owner_org': ...
-#     'author': ...
-#     'private': ...
-#     }
+client = CkanClient(
+    '771a05ad-af90-4a70-beea-cbb050059e14',
+    'http://localhost:5000',
+    'datopian',
+    'dailyprices',
+    'http://localhost:9419',
+)
 ```
 
-## Design
+These settings matches the standard of [`ckanext-blob-storage`](https://github.com/datopian/ckanext-blob-storage) development environment, but you still need to create the user and organization there.
 
-- http://tech.datopian.com/blob-storage/#direct-to-cloud-upload
+###  `ckanclient.CkanClient.action`
+
+Arguments:
+
+| Name                 | Type       | Default    | Description                                                  |
+| -------------------- | ---------- | ---------- | ------------------------------------------------------------ |
+| `name`               | `str`      | (required) | The action name, for example, `site_read`, `package_show`…   |
+| `payload`            | `dict`     | (required) | The payload being sent to CKAN. If a payload is provided for a GET request, it will be converted to URL parameters and each key will be converted to snake case. |
+| `http_get`           | `bool`     | `False`    | Optional, if `True` will make `GET` request, otherwise `POST`. |
+| `transform_payload`  | `function` | `None`     | Function to mutate the `payload` before making the request (useful to convert to and from CKAN and Frictionless formats). |
+| `transform_response` | `function` | `None`     | function to mutate the response data before returning it (useful to convert to and from CKAN and Frictionless formats). |
+
+This method is used internally by the following methods.
+
+### `ckanclient.CkanClient.create`
+
+Arguments:
+
+| Name                       | Type            | Description                                                  |
+| -------------------------- | --------------- | ------------------------------------------------------------ |
+| `dataset_name_or_metadata` | `str` or `dict` | It is either a string being a valid dataset name or dictionary with meta-data for the dataset in Frictionless format. |
+
+Example:
+
+```python
+dataset = client.create('dailyprices')
+```
+
+### `ckanclient.CkanClient.push`
+
+Arguments:
+
+| Name               | Type   | Description                               |
+| ------------------ | ------ | ----------------------------------------- |
+| `dataset_metadata` | `dict` | Dataset meta-data in Frictionless format. |
+
+Example:
+
+```python
+dataset_metadata = {
+    'id': '16d6e8d7-a848-48b1-91d0-fd393c1c6c01',
+    'name': 'dailyprices',
+    'owner_org': '57f97769-a982-4ccd-91f0-1d86dee822e3',
+    'title': 'dailyprices',
+    'type': 'dataset',
+    'contributors': [],
+    # …
+}
+dataset = client.push(dataset_metadata)
+```
+
+###  `ckanclient.CkanClient.retrieve`
+
+Arguments:
+
+| Name         | Type  | Description                |
+| ------------ | ----- | -------------------------- |
+| `name_or_id` | `str` | Id or name of the dataset. |
+
+Example:
+
+```python
+dataset = client.retrieve('dailyprices')
+```
+
+### `ckanclient.CkanClient.push_blob`
+
+Arguments:
+
+| Name       | Type   | Description              |
+| ---------- | ------ | ------------------------ |
+| `resource` | `dict` | A Frictionless resource. |
+
 
 ## Tests
 
 To run tests:
 
-```bash
-$ pip install pytest
-$ pytest
+```console
+$ poetry run pytest
 ```
 
 ## License

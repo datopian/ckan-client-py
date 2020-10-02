@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: '{"scopes": ["obj:datopian/dailyprices/*:write"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 771a05ad-af90-4a70-beea-cbb050059e14
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '48'
+      Content-Type:
+      - application/json;charset=utf-8
+      User-Agent:
+      - python-requests/2.24.0
+    method: POST
+    uri: http://localhost:5000/api/3/action/authz_authorize
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=authz_authorize",
+        "success": true, "result": {"requested_scopes": ["obj:datopian/dailyprices/*:write"],
+        "granted_scopes": ["obj:datopian/dailyprices/*:write"], "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOiJvYmo6ZGF0b3BpYW4vZGFpbHlwcmljZXMvKjp3cml0ZSIsIm5hbWUiOiJKYW5lIERvZSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMCIsImVtYWlsIjoiamFuZS5kb2VAZGF0b3BpYW4uY29tIiwiZXhwIjoxNjAxNjQ5OTQwLCJuYmYiOjE2MDE2NDkwNDAsInN1YiI6ImphbmVkb2UifQ.tU5MhREzccTPH8UnPNqri14ET0G4CZWjj9-rlesE6iI",
+        "user_id": "janedoe", "expires_at": "2020-10-02T14:45:40.787969+00:00"}}'
+    headers:
+      Cache-Control:
+      - private
+      Content-Length:
+      - '620'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Fri, 02 Oct 2020 14:30:40 GMT
+      Server:
+      - PasteWSGIServer/0.5 Python/2.7.16
+    status:
+      code: 200
+      message: OK
+version: 1
