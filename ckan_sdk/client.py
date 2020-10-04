@@ -181,7 +181,7 @@ class Client:
             'Authorization': self.auth_token,
         }
 
-        body = {'scopes': scope}
+        body = json.dumps({'scopes': scope})
         url = urljoin(self.base_url, path)
         response = self.__make_ckan_post_request(url, body, headers)
 
@@ -206,7 +206,7 @@ class Client:
         dict: contains the json response of the request.
         '''
 
-        body = {
+        body = json.dumps({
                 'operation': 'upload',
                 'transfers': ['basic'],
                 'ref': { 'name': 'refs/heads/contrib' },
@@ -216,13 +216,13 @@ class Client:
                     'size': file_size,
                     },
                 ],
-            }
+            })
 
         headers = {
             'Accept': 'application/vnd.git-lfs+json',
             'Content-Type': 'application/vnd.git-lfs+json',
             'Authorization': 'Bearer {}'.format(jwt_auth_token),
-        },
+        }
 
         url = urljoin(self.base_url, path)
         response = self.__make_ckan_post_request(url, body, headers)
@@ -291,7 +291,7 @@ class Client:
         return True
 
     def __make_ckan_post_request(self, url, body, headers):
-        return requests.post(url, body, headers=headers)
+        return requests.post(url, data=body, headers=headers)
 
     def __make_ckan_put_request(self, url, body, headers):
         return requests.put(url, body, headers=headers)
