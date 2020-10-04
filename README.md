@@ -1,9 +1,9 @@
 <div align="center">
 
-# ckan3-py-sdk
+# ckan-client-py
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/datopian/ckan3-py-sdk/issues)
-![ckan3-py-sdk actions](https://github.com/datopian/ckan3-py-sdk/workflows/ckan3-py-sdk%20actions/badge.svg)
+[![ckan-client-py actions](https://github.com/datopian/ckan-client-py/workflows/ckan-client-py%20actions/badge.svg)](https://github.com/datopian/ckan-client-py/actions?query=workflow%3A%22ckan-client-py+actions%22)
 [![The MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
 
@@ -17,13 +17,13 @@ CKAN 3 SDK for CKAN instances with CKAN v3 style cloud storage.<br> This SDK wil
 First, clone the repo via git:
 
 ```bash
-$ git clone git@github.com:datopian/ckan3-py-sdk.git
+$ git clone https://github.com/datopian/ckan-client-py.git
 ```
 
 Move to directory:
 
 ```bash
-$ cd ckan3-py-sdk
+$ cd ckan-client-py
 ```
 Install the package:
 
@@ -39,13 +39,13 @@ $ pip install requirements.txt
 ## Developers
 
 ```python
-from ckan_sdk import f11s
-from ckan_sdk import client
+from ckanclient import f11s
+from ckanclient.client import Client
 
 endpoint = 'https://my-ckan.com/'
 auth_token = 'xxxx'                   # your CKAN API key
 organization_name = 'my-organization' # the default organization on CKAN to add datasets to
-client_obj = client.Client(endpoint, auth_token, organization_name)
+client = Client(endpoint, auth_token, organization_name)
 
 # loads a resource from a path
 resource = f11s.load(resource_file_path)
@@ -57,13 +57,16 @@ print(resource)
 #     size: ...
 #   }
 
-dataset = f11s.Dataset({'name': dataset_name})
+# Create dataset object with dataset name
+dataset = f11s.Dataset({'name': 'sample-dataset'})
+
+# Add resource in dataset object
 dataset.add_resource(resource)
 
-# Push the dataset and resources to CKAN and resources to cloud cloud
-res = client_obj.push(dataset)
-print(res)
-# res = [{
+# Push the dataset and resources to CKAN and resources to cloud
+response = client.push(dataset)
+print(response)
+# response = [{
 #     'oid': ...
 #     'size': ...
 #     'success': ...
@@ -75,9 +78,9 @@ print(res)
 resource_path = 'path/to/file'
 # To push a single resource to ckan and cloud
 # `append` specifies that dataset already exists
-res = client.push_resource(resource_path, dataset='dataset-name', append=True)
-print(res)
-# res = [{
+response = client.push_resource(resource_path, dataset='dataset-name', append=True)
+print(response)
+# response = [{
 #     'oid': ...
 #     'size': ...
 #     'success': ...
@@ -87,14 +90,46 @@ print(res)
 
 
 # To push a single resource to cloud only
-res = client.store_blob(resource_path)
-# res = {
+response = client.store_blob(resource_path)
+print(response)
+# response = {
 #     'oid': ...
 #     'size': ...
 #     'success': ...
 #     'file_already_exists': ...
 #     'verify_url': ...
 #     'verify_token': ...
+#     }
+
+
+# Create dataset object with metadata
+dataset = f11s.Dataset({'name': 'sample-dataset', 'title': 'sample-dataset',
+                        'owner_org': 'my-organization', 'maintainer': 'datopian',
+                        'maintainer_email': 'maintainer@datopian.com', 'author': 'datopian,
+                        'notes': 'This is sample dataset'})
+
+# Push the dataset and resources with metadata to CKAN and resources to cloud
+response = client.push(dataset)
+print(response)
+# response = {
+#     'id': ...
+#     'name': ...
+#     'title': ...
+#     'owner_org': ...
+#     'author': ...
+#     'private': ...
+#     }
+
+# To update dataset with metadata in CKAN
+dataset = client.update_dataset(dataset)
+print(dataset)
+# dataset = {
+#     'id': ...
+#     'name': ...
+#     'title': ...
+#     'owner_org': ...
+#     'author': ...
+#     'private': ...
 #     }
 ```
 

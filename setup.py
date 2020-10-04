@@ -20,7 +20,7 @@ setup(
     long_description_content_type='text/markdown',
 
     # The project's main homepage.
-    url='https://github.com/datopian/ckan3-py-sdk',
+    url='https://github.com/datopian/ckan-client-py.git',
 
     # Author details
     author='Datopian',
