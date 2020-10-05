@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ckan-client"
-version = "0.1.0"
+version = "0.1.1"
 description = "CKAN Python SDK for CKAN3 instances with CKAN3 cloud storage."
 authors = ["Datopian <contact@datopian.com>"]
 license = "MIT"

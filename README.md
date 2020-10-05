@@ -14,23 +14,10 @@ Read more about [it's design](http://tech.datopian.com/blob-storage/#direct-to-c
 
 ## Install
 
-All you need is [Git](https://git-scm.com/), and [Python](https://www.python.org/) 3.6+ with a [PEP 527](https://www.python.org/dev/peps/pep-0517/) compliant tool, such as [Poetry](https://python-poetry.org/).
-
-First, clone this repository:
+Install it from the Python Package Index:
 
 ```console
-$ git clone https://github.com/datopian/ckan-client-py.git
-```
-
-Then, move to is directory:
-
-```console
-$ cd ckan-client-py
-```
-And install the package and its dependencies, for example, with Poetry:
-
-```console
-$ poetry install
+$ pip install ckan-client
 ```
 
 ## Usage
@@ -139,7 +126,27 @@ Arguments:
 | `resource` | `dict` | A Frictionless resource. |
 
 
-## Tests
+## Development
+
+All you need is [Git](https://git-scm.com/), and [Python](https://www.python.org/) 3.6+ with a [PEP 527](https://www.python.org/dev/peps/pep-0517/) compliant tool, such as [Poetry](https://python-poetry.org/).
+
+First, clone this repository:
+
+```console
+$ git clone https://github.com/datopian/ckan-client-py.git
+```
+
+Then, move to is directory:
+
+```console
+$ cd ckan-client-py
+```
+
+And install the package and its dependencies, for example, with Poetry:
+
+```console
+$ poetry install
+```
 
 To run tests:
 
