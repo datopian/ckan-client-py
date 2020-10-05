@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ckan-client"
-version = "0.2.0"
+version = "0.1.0"
 description = "CKAN Python SDK for CKAN3 instances with CKAN3 cloud storage."
 authors = ["Datopian <contact@datopian.com>"]
 license = "MIT"
@@ -8,11 +8,16 @@ readme = "README.md"
 homepage = "https://github.com/datopian/ckan-client-py"
 keywords = ["ckan", "api", "upload", "cloud"]
 classifiers = [
-    "Development Status :: 4 - Alpha",
-    "License :: OSI Approved :: MIT",
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8"
+]
+packages = [
+    { include = "ckanclient" },
+    { include = "License" },
+    { include = "README.md" },
 ]
 
 [tool.poetry.dependencies]
