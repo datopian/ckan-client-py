@@ -1,0 +1,49 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - 771a05ad-af90-4a70-beea-cbb050059e14
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json;charset=utf-8
+      User-Agent:
+      - python-requests/2.24.0
+    method: GET
+    uri: http://localhost:5000/api/3/action/package_show?id=dailyprices
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=package_show",
+        "success": true, "result": {"license_title": null, "maintainer": null, "relationships_as_object":
+        [], "private": false, "maintainer_email": null, "num_tags": 0, "id": "16d6e8d7-a848-48b1-91d0-fd393c1c6c01",
+        "metadata_created": "2020-10-02T15:35:43.064103", "owner_org": "57f97769-a982-4ccd-91f0-1d86dee822e3",
+        "metadata_modified": "2020-10-02T16:00:37.856156", "author": null, "author_email":
+        null, "state": "active", "version": null, "license_id": null, "type": "dataset",
+        "resources": [], "num_resources": 0, "tags": [], "groups": [], "creator_user_id":
+        "91f4d037-f220-4bd3-a86d-c24870753b0e", "relationships_as_subject": [], "name":
+        "dailyprices", "isopen": false, "url": null, "notes": null, "title": "dailyprices",
+        "extras": [], "organization": {"description": "", "title": "datopian", "created":
+        "2020-10-02T09:38:11.493724", "approval_status": "approved", "is_organization":
+        true, "state": "active", "image_url": "", "revision_id": "06f68108-9124-4a64-8a05-af0ed8eaf411",
+        "type": "organization", "id": "57f97769-a982-4ccd-91f0-1d86dee822e3", "name":
+        "datopian"}, "revision_id": "4ee38e73-2f25-4ece-b5da-c7c3370141fb"}}'
+    headers:
+      Cache-Control:
+      - private
+      Content-Length:
+      - '1200'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Fri, 02 Oct 2020 16:14:03 GMT
+      Server:
+      - PasteWSGIServer/0.5 Python/2.7.16
+    status:
+      code: 200
+      message: OK
+version: 1

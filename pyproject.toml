@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "ckan-client"
+version = "0.2.0"
+description = "CKAN Python SDK for CKAN3 instances with CKAN3 cloud storage."
+authors = ["Datopian <contact@datopian.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/datopian/ckan-client-py"
+keywords = ["ckan", "api", "upload", "cloud"]
+classifiers = [
+    "Development Status :: 4 - Alpha",
+    "License :: OSI Approved :: MIT",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8"
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+frictionless-ckan-mapper = "^1.0.6"
+requests = "^2.24.0"
+
+[tool.poetry.dev-dependencies]
+black = { version = "*", allow-prereleases = true }
+pdbpp = "^0.10.2"
+pytest = "^6.1.0"
+pytest-black = "^0.3.11"
+pytest-cov = "^2.10.1"
+pytest-flake8 = "^1.0.6"
+pytest-mock = "^3.3.1"
+vcrpy = "^4.1.0"
+
+[tool.black]
+skip-string-normalization = true
+
+[tool.pytest.ini_options]
+flake8-max-line-length = 88
+flake8-ignore = "W503"
+addopts = "--black --flake8 --cov ckanclient --no-cov-on-fail --cov-fail-under=80"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
