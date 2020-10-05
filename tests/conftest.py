@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from vcr import use_cassette
 
-from ckanclient import CkanClient
+from ckanclient import Client
 from ckanclient.auth import CkanAuthApi
 
 
@@ -39,4 +39,4 @@ def auth():
 
 @pytest.fixture
 def client():
-    return CkanClient(API_URL, API_KEY, ORGANIZATION, DATASET, LFS_URL)
+    return Client(API_URL, API_KEY, ORGANIZATION, DATASET, LFS_URL)

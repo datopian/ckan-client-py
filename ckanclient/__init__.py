@@ -17,8 +17,23 @@ class CkanClientError(Exception):
     pass
 
 
-class CkanClient:
+class Client:
+    """The client to connect to and interact with a CKAN instance running with
+    blob storage. It offers basic methods to perform frequent actions such as
+    pushing or retrieving a dataset."""
+
     def __init__(self, api_url, api_key, organization, dataset_id, lfs_url):
+        """Initialization to create instances of the client (requires CKAN with
+        blob storage).
+
+        Attributes:
+            api_url (str): The base URL to access the API (without the
+            `/api/<version>` part).
+            api_key (str): The API key (as seen in the web interface of a user).
+            organization (str): The name or id of an existing organization.
+            dataset_id (str): = The ID of an existing dataset.
+            lfs_url (str): = The URL to access the Git LFS server (e.g.: Giftless).
+        """
         self.api_url = api_url
         self.api_key = api_key
         self.organization = organization

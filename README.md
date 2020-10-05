@@ -35,7 +35,7 @@ $ poetry install
 
 ## Usage
 
-### `ckanclient.CkanClient`
+### `ckanclient.Client`
 
 Arguments:
 
@@ -51,10 +51,10 @@ Arguments:
 Example:
 
 ```python
-from ckanclient import CkanClient
+from ckanclient import Client
 
 
-client = CkanClient(
+client = Client(
     '771a05ad-af90-4a70-beea-cbb050059e14',
     'http://localhost:5000',
     'datopian',
@@ -65,7 +65,7 @@ client = CkanClient(
 
 These settings matches the standard of [`ckanext-blob-storage`](https://github.com/datopian/ckanext-blob-storage) development environment, but you still need to create the user and organization there.
 
-###  `ckanclient.CkanClient.action`
+###  `ckanclient.Client.action`
 
 Arguments:
 
@@ -79,7 +79,7 @@ Arguments:
 
 This method is used internally by the following methods.
 
-### `ckanclient.CkanClient.create`
+### `ckanclient.Client.create`
 
 Arguments:
 
@@ -93,7 +93,7 @@ Example:
 dataset = client.create('dailyprices')
 ```
 
-### `ckanclient.CkanClient.push`
+### `ckanclient.Client.push`
 
 Arguments:
 
@@ -116,7 +116,7 @@ dataset_metadata = {
 dataset = client.push(dataset_metadata)
 ```
 
-###  `ckanclient.CkanClient.retrieve`
+###  `ckanclient.Client.retrieve`
 
 Arguments:
 
@@ -130,7 +130,7 @@ Example:
 dataset = client.retrieve('dailyprices')
 ```
 
-### `ckanclient.CkanClient.push_blob`
+### `ckanclient.Client.push_blob`
 
 Arguments:
 
