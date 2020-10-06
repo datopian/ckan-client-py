@@ -33,7 +33,7 @@ def verify_upload(action, resource):
         'Content-Type': 'application/vnd.git-lfs+json',
     }
     headers.update(action["header"])
-    data = {'oid': resource["descriptor"]["hash"], 'size': resource["size"]}
+    data = {'oid': resource["stats"]["hash"], 'size': resource["stats"]["bytes"]}
     response = requests.post(action["href"], headers=headers, json=data)
 
     # If the file is not found, we get a 404 with {message: '…'}

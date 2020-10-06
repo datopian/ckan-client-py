@@ -4,6 +4,7 @@ import requests
 from frictionless_ckan_mapper import ckan_to_frictionless, frictionless_to_ckan
 
 from ckanclient.auth import CkanAuthApi
+from ckanclient.errors import ResponseError
 from ckanclient.text import camel_to_snake
 from ckanclient.upload import push_data_to_blob_storage, verify_upload
 
@@ -13,7 +14,7 @@ logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
-class CkanClientError(Exception):
+class CkanClientError(ResponseError):
     pass
 
 
@@ -34,12 +35,18 @@ class Client:
             dataset_id (str): = The ID of an existing dataset.
             lfs_url (str): = The URL to access the Git LFS server (e.g.: Giftless).
         """
+        if not api_url.endswith('/'):
+            api_url = f'{api_url}/'
+
+        if not lfs_url.endswith('/'):
+            lfs_url = f'{lfs_url}/'
+
         self.api_url = api_url
         self.api_key = api_key
         self.organization = organization
         self.dataset_id = dataset_id
         self.lfs_url = lfs_url
-        self.auth = CkanAuthApi(api_url, api_key, organization, dataset_id)
+        self.auth = CkanAuthApi(self)
 
     def action(
         self,
@@ -69,7 +76,7 @@ class Client:
         Returns:
             dict: the API response converted from JSON to a Python dictionary.
         """
-        url = f'{self.api_url}/api/3/action/{name}'
+        url = f'{self.api_url}api/3/action/{name}'
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': self.api_key,
@@ -84,11 +91,7 @@ class Client:
             response = requests.post(url, headers=headers, data=payload)
 
         if response.status_code < 200 or response.status_code >= 300:
-            msg = (
-                'CKAN Action API returned HTTP Status Code '
-                f'{response.status_code}:\n{response.text}'
-            )
-            raise CkanClientError(msg)
+            raise CkanClientError(response)
 
         data = response.json()
         return transform_response(data) if transform_response else data
@@ -167,12 +170,12 @@ class Client:
         result = {
             'oid': obj['oid'],
             'size': obj['size'],
-            'name': resource['descriptor']['name'],
+            'name': resource['name'],
             'success': True,
             'fileExists': True,
         }
 
-        if not obj["actions"]:  # File is already in storage
+        if not obj.get("actions"):  # File is already in storage
             return result
 
         result["file_exists"] = False

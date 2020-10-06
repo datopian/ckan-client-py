@@ -1,36 +1,36 @@
 import requests
 
+from ckanclient.errors import ResponseError
 
-class CkanAuthApiError(Exception):
+
+class CkanAuthApiError(ResponseError):
     pass
 
 
 def json_from_post(*args, **kwargs):
     response = requests.post(*args, **kwargs)
     if response.status_code != 200:
-        raise CkanAuthApiError(response.text)
+        raise CkanAuthApiError(response)
     return response.json()
 
 
 class CkanAuthApi:
-    def __init__(self, api_url, api_key, organization, dataset_id):
-        self.api_url = api_url
-        self.api_key = api_key
-        self.organization = organization
-        self.dataset_id = dataset_id
+    def __init__(self, client):
+        """Expects an instance of `ckanclient.Client`."""
+        self.client = client
 
     def get_jwt_from_ckan_authz(self, scope):
         """Get an authorization token from ckanext-authz-service."""
-        url = f'{self.api_url}/api/3/action/authz_authorize'
+        url = f'{self.client.api_url}api/3/action/authz_authorize'
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
-            'Authorization': self.api_key,
+            'Authorization': self.client.api_key,
         }
         return json_from_post(url, headers=headers, json={'scopes': scope})
 
     def do_blob_authz(self):
         """Creates the scope and send it to CKAN Authz to get a token."""
-        scope = [f'obj:{self.organization}/{self.dataset_id}/*:write']
+        scope = [f'obj:{self.client.organization}/{self.client.dataset_id}/*:write']
         response = self.get_jwt_from_ckan_authz(scope)
         try:
             return response['result']['token']
@@ -44,22 +44,22 @@ class CkanAuthApi:
 
     def request_file_upload_actions(self, resource):
         """Returns a signed URL, a verification URL and a JWT token."""
-        url = f'{self.api_url}/{self.organization}/{self.dataset_id}/objects/batch'
-        token = self.do_blob_authz()
+        path = f'{self.client.organization}/{self.client.dataset_id}/objects/batch'
+        url = f'{self.client.lfs_url}{path}'
         data = {
             'operation': 'upload',
             'transfers': ['basic'],
             'ref': {'name': 'refs/heads/contrib'},
             'objects': [
                 {
-                    'oid': resource['descriptor']['hash'],
-                    'size': resource['size'],
+                    'oid': resource['stats']['hash'],
+                    'size': resource['stats']['bytes'],
                 }
             ],
         }
         headers = {
             'Accept': 'application/vnd.git-lfs+json',
             'Content-Type': 'application/vnd.git-lfs+json',
-            'Authorization': f'Bearer {token}',
+            'Authorization': f'Bearer {self.do_blob_authz()}',
         }
         return json_from_post(url, headers=headers, json=data)

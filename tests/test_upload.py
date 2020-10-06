@@ -19,9 +19,8 @@ def test_failed_push_data_to_blob_storage(mocker, sample_file):
     mocker.patch('ckanclient.upload.requests.put', return_value=response)
     action = {'href': 'http://ckan', 'header': {}}
     resource = {
-        'descriptor': {'hash': '2a'},
         'path': sample_file,
-        'size': 42,
+        'stats': {'hash': '2a', 'bytes': 42},
     }
     with pytest.raises(CkanUploadAPIError):
         push_data_to_blob_storage(action, resource)
@@ -39,6 +38,6 @@ def test_failed_verify_upload(mocker):
     response.json.return_value = {'message': 42}
     mocker.patch('ckanclient.upload.requests.post', return_value=response)
     action = {'href': 'http://ckan', 'header': {}}
-    resource = {'buffer': {'data': 42}, 'descriptor': {'hash': '2a'}, 'size': 42}
+    resource = {'stats': {'hash': '2a', 'bytes': 42}}
     with pytest.raises(CkanUploadAPIError):
         verify_upload(action, resource)
