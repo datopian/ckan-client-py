@@ -21,7 +21,8 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.1"
+frictionless = {extras = ["pandas"], version = "^3.16.0"}
 frictionless-ckan-mapper = "^1.0.6"
 requests = "^2.24.0"
 
@@ -41,7 +42,7 @@ skip-string-normalization = true
 [tool.pytest.ini_options]
 flake8-max-line-length = 88
 flake8-ignore = "W503"
-addopts = "--black --flake8 --cov ckanclient --no-cov-on-fail --cov-fail-under=80"
+addopts = "--black --flake8 --cov ckanclient --no-cov-on-fail --cov-fail-under=90"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

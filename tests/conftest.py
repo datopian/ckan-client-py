@@ -5,10 +5,9 @@ import pytest
 from vcr import use_cassette
 
 from ckanclient import Client
-from ckanclient.auth import CkanAuthApi
 
 
-API_KEY = '771a05ad-af90-4a70-beea-cbb050059e14'
+API_KEY = 'c15faba1-3792-426a-abb8-9501342ac38b'
 API_URL = 'http://localhost:5000'
 ORGANIZATION = 'datopian'
 DATASET = 'dailyprices'
@@ -17,7 +16,7 @@ LFS_URL = 'http://0.0.0.0:9419'
 
 @pytest.fixture
 def sample_file():
-    path = Path(__file__).parent / 'sample_file' / 'dailyprices.csv'
+    path = Path() / 'tests' / 'sample_file' / 'dailyprices.csv'
     return str(path)
 
 
@@ -33,10 +32,10 @@ def vcr():
 
 
 @pytest.fixture
-def auth():
-    return CkanAuthApi(API_URL, API_KEY, ORGANIZATION, DATASET)
+def client():
+    return Client(API_URL, API_KEY, ORGANIZATION, DATASET, LFS_URL)
 
 
 @pytest.fixture
-def client():
-    return Client(API_URL, API_KEY, ORGANIZATION, DATASET, LFS_URL)
+def auth(client):
+    return client.auth

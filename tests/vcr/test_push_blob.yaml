@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: '{"scopes": ["obj:datopian/dailyprices/*:write"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - c15faba1-3792-426a-abb8-9501342ac38b
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '48'
+      Content-Type:
+      - application/json;charset=utf-8
+      User-Agent:
+      - python-requests/2.24.0
+    method: POST
+    uri: http://localhost:5000/api/3/action/authz_authorize
+  response:
+    body:
+      string: '{"help": "http://localhost:5000/api/3/action/help_show?name=authz_authorize",
+        "success": true, "result": {"requested_scopes": ["obj:datopian/dailyprices/*:write"],
+        "granted_scopes": ["obj:datopian/dailyprices/*:write"], "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOiJvYmo6ZGF0b3BpYW4vZGFpbHlwcmljZXMvKjp3cml0ZSIsIm5hbWUiOiJKYW5lIERvZSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMCIsImVtYWlsIjoiamFuZS5kb2VAZGF0b3BpYW4uY29tIiwiZXhwIjoxNjAyMTkyMTU2LCJuYmYiOjE2MDIxOTEyNTYsInN1YiI6ImphbmVkb2UifQ.XmdYx5133DaOdbqjmRJsIqTB0uPx9112dr0Jbz5wv2s",
+        "user_id": "janedoe", "expires_at": "2020-10-08T21:22:36.326012+00:00"}}'
+    headers:
+      Cache-Control:
+      - private
+      Content-Length:
+      - '620'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Thu, 08 Oct 2020 21:07:36 GMT
+      Server:
+      - PasteWSGIServer/0.5 Python/2.7.16
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"operation": "upload", "transfers": ["basic"], "ref": {"name": "refs/heads/contrib"},
+      "objects": [{"oid": "745659a83fbc9ba9fd1c92e64d2a9f87", "size": 1691}]}'
+    headers:
+      Accept:
+      - application/vnd.git-lfs+json
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOiJvYmo6ZGF0b3BpYW4vZGFpbHlwcmljZXMvKjp3cml0ZSIsIm5hbWUiOiJKYW5lIERvZSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTAwMCIsImVtYWlsIjoiamFuZS5kb2VAZGF0b3BpYW4uY29tIiwiZXhwIjoxNjAyMTkyMTU2LCJuYmYiOjE2MDIxOTEyNTYsInN1YiI6ImphbmVkb2UifQ.XmdYx5133DaOdbqjmRJsIqTB0uPx9112dr0Jbz5wv2s
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '158'
+      Content-Type:
+      - application/vnd.git-lfs+json
+      User-Agent:
+      - python-requests/2.24.0
+    method: POST
+    uri: http://0.0.0.0:9419/datopian/dailyprices/objects/batch
+  response:
+    body:
+      string: '{"transfer": "basic", "objects": [{"oid": "745659a83fbc9ba9fd1c92e64d2a9f87",
+        "size": 1691}]}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '93'
+      Content-Type:
+      - application/vnd.git-lfs+json
+      Date:
+      - Thu, 08 Oct 2020 21:07:36 GMT
+      Server:
+      - nginx/1.13.12
+    status:
+      code: 200
+      message: OK
+version: 1

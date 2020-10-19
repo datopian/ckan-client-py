@@ -1,4 +1,4 @@
-import pytest
+from frictionless import describe
 
 
 def test_create(vcr, client):
@@ -36,7 +36,7 @@ def test_retrieve(vcr, client):
     assert dataset['success']
 
 
-@pytest.mark.skip('TODO')  # TODO needs a working resource
 def test_push_blob(vcr, sample_file, client):
+    resource = describe(sample_file)
     with vcr('test_push_blob.yaml'):
-        pass
+        client.push_blob(resource)
