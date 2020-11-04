@@ -162,7 +162,7 @@ class Client:
         Returns:
             dict: the push blob result has the keys `oid` (str), `size` (int)
                 of the file, `name` (str) of the resource, `success` (bool) of
-                the request, and `file_exists` (bool) indicating whether the
+                the request, and `fileExists` (bool) indicating whether the
                 resource existed or not.
         """
         lfs = self.auth.request_file_upload_actions(resource)
@@ -175,9 +175,9 @@ class Client:
             'fileExists': True,
         }
 
-        if not obj.get("actions"):  # File is already in storage
-            return result
+        if obj.get("actions"):  # file is not in storage
+            push_data_to_blob_storage(obj["actions"]["upload"], resource)
+            verify_upload(obj["actions"]["verify"], resource)
+            result["fileExists"] = False
 
-        result["file_exists"] = False
-        push_data_to_blob_storage(obj["actions"]["upload"], resource)
-        verify_upload(obj["actions"]["verify"], resource)
+        return result
