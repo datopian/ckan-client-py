@@ -39,4 +39,7 @@ def test_retrieve(vcr, client):
 def test_push_blob(vcr, sample_file, client):
     resource = describe(sample_file)
     with vcr('test_push_blob.yaml'):
-        client.push_blob(resource)
+        result = client.push_blob(resource)
+
+    assert result is not None
+    assert result['fileExists']
