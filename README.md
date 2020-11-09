@@ -6,11 +6,11 @@
 [![ckan-client-py actions](https://github.com/datopian/ckan-client-py/workflows/ckan-client-py%20actions/badge.svg)](https://github.com/datopian/ckan-client-py/actions?query=workflow%3A%22ckan-client-py+actions%22)
 [![The MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
-CKAN 3 SDK for CKAN instances with CKAN v3 style cloud storage.<br> This SDK will communicate with [`ckanext-authz-service`](https://github.com/datopian/ckanext-authz-service) (using CKAN to provide authorization tokens for other related systems) and [Giftless](https://github.com/datopian/giftless) (a highly customizable and extensible Git LFS server implemented in Python) to upload data to blob storage.
-
-Read more about [it's design](http://tech.datopian.com/blob-storage/#direct-to-cloud-upload).
+CKAN 3 SDK for CKAN instances with [CKAN v3 style cloud storage][storage]. Tutorial on use at https://tech.datopian.com/ckan-client-guide/. API documentation below. 
 
 </div>
+
+[storage]: https://tech.datopian.com/blob-storage/#ckan-v3
 
 ## Install
 
