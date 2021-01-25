@@ -88,7 +88,7 @@ class Client:
             params = {camel_to_snake(k): v for k, v in payload.items()}
             response = requests.get(url, headers=headers, params=params)
         else:
-            response = requests.post(url, headers=headers, data=payload)
+            response = requests.post(url, headers=headers, json=payload)
 
         if response.status_code < 200 or response.status_code >= 300:
             raise CkanClientError(response)
