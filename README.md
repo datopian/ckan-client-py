@@ -6,7 +6,7 @@
 [![ckan-client-py actions](https://github.com/datopian/ckan-client-py/workflows/ckan-client-py%20actions/badge.svg)](https://github.com/datopian/ckan-client-py/actions?query=workflow%3A%22ckan-client-py+actions%22)
 [![The MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
-CKAN SDK for interacting with CKAN instances with [CKAN v3 style cloud storage][storage]. Tutorial on use at https://tech.datopian.com/ckan-client-guide/. API documentation below. 
+CKAN SDK for interacting with CKAN instances with [CKAN v3 style cloud storage][storage]. Tutorial on use at https://tech.datopian.com/ckan-client-guide/. API documentation below.
 
 </div>
 
@@ -42,8 +42,8 @@ from ckanclient import Client
 
 
 client = Client(
-    '771a05ad-af90-4a70-beea-cbb050059e14',
     'http://localhost:5000',
+    '771a05ad-af90-4a70-beea-cbb050059e14',
     'datopian',
     'dailyprices',
     'http://localhost:9419',
